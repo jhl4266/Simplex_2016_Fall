@@ -62,7 +62,41 @@ void Application::Display(void)
 
 
 	//your code goes here
-	v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);
+
+	//set up stops
+	static int stopNumber = 0;
+	static vector3 start = m_stopsList[stopNumber];
+	static vector3 end = m_stopsList[(stopNumber + 1) % m_stopsList.size()];
+
+	//Figure out the delta times
+	static DWORD startTime = GetTickCount();
+	DWORD currentTime = GetTickCount();
+	float fCurrentTime = (currentTime - startTime) / 1000.f;
+
+	//Lerp
+	float fPercent = MapValue(fCurrentTime, 0.0f, 2.0f, 0.0f, 1.0f);
+	v3CurrentPos = glm::lerp(start, end, fPercent);
+
+	//Check if we reached the point
+	vector3 displacement = end - v3CurrentPos;
+	vector3 direction = end - start;
+	float displacementDotDirection = glm::dot(displacement, direction);
+
+	//If this is negative, we passed the point
+	if (displacementDotDirection < 0) {
+
+		//Adjust the stop number
+		++stopNumber;
+		stopNumber %= m_stopsList.size();
+
+		//adjust the stops
+		start = m_stopsList[stopNumber];
+		end = m_stopsList[(stopNumber + 1) % m_stopsList.size()];
+
+		//reset the timer
+		startTime = GetTickCount();
+	}
+
 	//-------------------
 	
 
