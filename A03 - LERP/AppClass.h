@@ -19,8 +19,13 @@ Date: 2017/05
 class Application
 {
 	uint m_uOrbits = 0; //number of shapes starting at 3 and increasing in sides
+	std::vector<std::vector<vector3>> stopsList; // a list of lists of stops (1 for each shape)
+	std::vector<vector3> starts; // A list of list of the starting waaypoints
+	std::vector<vector3> ends; //A list of lists of the ending waypoints
+	std::vector<int> stopNumbers; //A list of current stop numbers;
 	std::vector<uint> m_shapeList; //shape index for circles
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	String configFile = "A03 - LERP.ini";
 	
 private:
 	static ImGuiObject gui; //GUI object

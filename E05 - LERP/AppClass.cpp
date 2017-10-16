@@ -57,10 +57,6 @@ void Application::Display(void)
 	//calculate the current position
 	vector3 v3CurrentPos;
 	
-
-
-
-
 	//your code goes here
 
 	//set up stops
@@ -98,9 +94,6 @@ void Application::Display(void)
 	}
 
 	//-------------------
-	
-
-
 	
 	matrix4 m4Model = glm::translate(v3CurrentPos);
 	m_pModel->SetModelMatrix(m4Model);

@@ -38,12 +38,22 @@ void Application::Display(void)
 	static uint uClock = m_pSystem->GenClock();
 	float fTimer = m_pSystem->GetTimeSinceStart(uClock);
 
-	//calculate the current position
-	matrix4 m4Rotation = glm::rotate(IDENTITY_M4, fTimer * 60.0f, vector3(0.0f, 0.0f, 1.0f));
-	matrix4 m4Model;
-	for (uint i = 0; i < 2500; ++i)
-		m4Model = m4Rotation * glm::translate(IDENTITY_M4, vector3(2.5f, 0.0f, 0.0f)) * glm::transpose(m4Rotation);
+	//calculate the current position+
 	
+	/*
+	matrix4 m4RotX = glm::rotate(IDENTITY_M4, m_v3Rotation.x, vector3(1.0f, 0.0f, 0.0f));
+	matrix4 m4RotY = glm::rotate(IDENTITY_M4, m_v3Rotation.y, vector3(0.0f, 1.0f, 0.0f));
+	matrix4 m4RotZ = glm::rotate(IDENTITY_M4, m_v3Rotation.z, vector3(0.0f, 0.0f, 1.0f));
+	matrix4 m4Model = m4RotZ * m4RotY * m4RotX;
+	*/
+
+	quaternion quatX = glm::angleAxis(m_v3Rotation.x, vector3(1.0f, 0.0f, 0.0f));
+	quaternion quatY = glm::angleAxis(m_v3Rotation.y, vector3(0.0f, 1.0f, 0.0f));
+	quaternion quatZ = glm::angleAxis(m_v3Rotation.z, vector3(0.0f, 0.0f, 1.0f));
+	quaternion quatModel = quatZ * quatY * quatX;
+	matrix4 m4Model = glm::toMat4(quatModel);
+
+
 	/*
 	//extra part, how to rotate around a point (in this case the base of the cone)
 	matrix4 m4Translation = glm::translate(IDENTITY_M4, vector3(0.0f, 0.5f, 0.0f));
