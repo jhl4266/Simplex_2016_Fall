@@ -47,10 +47,20 @@ void Application::Display(void)
 	matrix4 m4Model = m4RotZ * m4RotY * m4RotX;
 	*/
 
-	quaternion quatX = glm::angleAxis(m_v3Rotation.x, vector3(1.0f, 0.0f, 0.0f));
-	quaternion quatY = glm::angleAxis(m_v3Rotation.y, vector3(0.0f, 1.0f, 0.0f));
-	quaternion quatZ = glm::angleAxis(m_v3Rotation.z, vector3(0.0f, 0.0f, 1.0f));
-	quaternion quatModel = quatZ * quatY * quatX;
+	glm::quat quatX = glm::angleAxis(m_v3Rotation.x, vector3(1.0f, 0.0f, 0.0f));
+	glm::quat quatY = glm::angleAxis(m_v3Rotation.y, vector3(0.0f, 1.0f, 0.0f));
+	glm::quat quatZ = glm::angleAxis(m_v3Rotation.z, vector3(0.0f, 0.0f, 1.0f));
+	glm::quat quatModel = quatZ * quatY * quatX;
+
+	/*
+	glm::vec3 normalized = glm::normalize(m_v3Rotation);
+	float x = 1 * sin(m_v3Rotation.x / 2);
+	float y = 0 * sin(m_v3Rotation.y / 2);
+	float z = 0 * sin(m_v3Rotation.z / 2);
+	float w = 1;
+	glm::quat quatModel = glm::quat(w, x, y, z);
+	*/
+
 	matrix4 m4Model = glm::toMat4(quatModel);
 
 

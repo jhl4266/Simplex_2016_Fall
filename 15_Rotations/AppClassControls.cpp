@@ -438,6 +438,13 @@ void Application::ProcessKeyboard(void)
 		else
 			m_v3Rotation.z += 1.0f;
 	}
+	/*
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+		if (fMultiplier)
+			//rotation -= 0.01f;
+		else
+			//rotation += 0.01f;
+	}*/
 }
 //Joystick
 void Application::ProcessJoystick(void)

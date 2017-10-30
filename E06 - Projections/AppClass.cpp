@@ -49,6 +49,7 @@ void Application::Display(void)
 	m_pMeshMngr->AddSkyboxToRenderList();
 
 	//calculate view and projection
+	static float aspectRatio = m_pSystem->GetWindowRatio();
 	switch (m_uProjection)
 	{
 	default:
@@ -57,21 +58,30 @@ void Application::Display(void)
 		break;
 	case 2:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPerspective(false);
 		break;
 	case 3:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPosition(AXIS_X * 30.0f);
+		m_pCamera->SetUp(-AXIS_Z);
 		break;
 	case 4:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPosition(AXIS_Z * -15.0f);
 		break;
 	case 5:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPosition(AXIS_Z * -15.0f);
+		m_pCamera->SetNearFar(vector2(6.0f, 1000.0f));
 		break;
 	case 6:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetPosition(AXIS_Z * -15.0f);
+		m_pCamera->SetNearFar(vector2(0.001f, 10.0f));
 		break;
 	case 7:
 		m_pCamera->ResetCamera();
+		m_pCamera->SetUp(-AXIS_Y);
 		break;
 	}
 
