@@ -1,6 +1,6 @@
 #include "AppClass.h"
 using namespace Simplex;
-//Mouse
+//
 void Application::ProcessMouseMovement(sf::Event a_event)
 {
 	//get global mouse position
@@ -368,8 +368,53 @@ void Application::CameraRotation(float a_fSpeed)
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
 		fAngleX += fDeltaMouse * a_fSpeed;
 	}
-	//Change the Yaw and the Pitch of the camera
-	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
+
+	//Change the Yaw and Pitch of the camera
+	vector3 up = m_pCameraMngr->GetUpward();
+	vector3 right = m_pCameraMngr->GetRightward();
+
+	//Calulate the Yaw quaternion
+	float sinHalfYaw = sin(fAngleY / 2.0f);
+	float cosHalfYaw = cos(fAngleY / 2.0f);
+	glm::quat yawQuat = glm::quat(
+		cosHalfYaw,
+		up.x * sinHalfYaw,
+		up.y * sinHalfYaw,
+		up.z * sinHalfYaw);
+
+	//Apply the Yaw quaternion to the target vector
+	camTarget = camPos + (yawQuat * (camTarget - camPos));
+
+	//Calulate the Pitch quaternion
+	float sinHalfPitch = sin(-fAngleX / 2.0f);
+	float cosHalfPitch = cos(-fAngleX / 2.0f);
+	glm::quat pitchQuat = glm::quat(
+		cosHalfPitch,
+		right.x * sinHalfPitch,
+		right.y * sinHalfPitch,
+		right.z * sinHalfPitch);
+	
+	//Apply the Pitch quaternion to the target vector
+	camTarget = camPos + (pitchQuat * (camTarget - camPos));
+
+	//Adjust the target in the camera
+	m_pCamera->SetTarget(camTarget);
+	m_pCamera->SetUp(up);
+
+	//Calculate the new forward vector
+	vector3 forward = glm::normalize(camTarget - camPos);
+
+	//Adjust the orientation vectors in the camera manager
+	m_pCameraMngr->SetForward(forward);
+	m_pCameraMngr->SetRightward(glm::cross(forward, up));
+	m_pCameraMngr->SetUpward(up);
+
+	//Adjust the projection and view matrices
+	m_pCamera->CalculateProjectionMatrix();
+	m_pCamera->CalculateViewMatrix();
+
+	//Position the mouse in the center
+	SetCursorPos(CenterX, CenterY);
 }
 //Keyboard
 void Application::ProcessKeyboard(void)
@@ -385,6 +430,79 @@ void Application::ProcessKeyboard(void)
 
 	if (fMultiplier)
 		fSpeed *= 5.0f;
+
+	/*
+	**WASD movement controls in local space
+	*/
+
+	//Move forwards
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+		vector3 forward = m_pCameraMngr->GetForward();
+
+		//Adjust the position and target position
+		camPos += forward * fSpeed;
+		camTarget += forward * fSpeed;
+
+		//Set the new values to the camera
+		m_pCamera->SetPosition(camPos);
+		m_pCamera->SetTarget(camTarget);
+
+		//Adjust the projection and view matrices
+		m_pCamera->CalculateProjectionMatrix();
+		m_pCamera->CalculateViewMatrix();
+	}
+
+	//Move backwards
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+		vector3 forward = m_pCameraMngr->GetForward();
+
+		//Adjust the position and target position
+		camPos -= forward * fSpeed;
+		camTarget -= forward * fSpeed;
+
+		//Set the new values to the camera
+		m_pCamera->SetPosition(camPos);
+		m_pCamera->SetTarget(camTarget);
+
+		//Adjust the projection and view matrices
+		m_pCamera->CalculateProjectionMatrix();
+		m_pCamera->CalculateViewMatrix();
+	}
+
+	//Move left
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+		vector3 right = m_pCameraMngr->GetRightward();
+
+		//Adjust the position and target position
+		camPos -= right * fSpeed;
+		camTarget -= right * fSpeed;
+
+		//Set the new values to the camera
+		m_pCamera->SetPosition(camPos);
+		m_pCamera->SetTarget(camTarget);
+
+		//Adjust the projection and view matrices
+		m_pCamera->CalculateProjectionMatrix();
+		m_pCamera->CalculateViewMatrix();
+	}
+
+	//Move right
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+		vector3 right = m_pCameraMngr->GetRightward();
+
+		//Adjust the position and target position
+		camPos += right * fSpeed;
+		camTarget += right * fSpeed;
+
+		//Set the new values to the camera
+		m_pCamera->SetPosition(camPos);
+		m_pCamera->SetTarget(camTarget);
+
+		//Adjust the projection and view matrices
+		m_pCamera->CalculateProjectionMatrix();
+		m_pCamera->CalculateViewMatrix();
+	}
+	
 #pragma endregion
 }
 //Joystick

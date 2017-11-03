@@ -15,9 +15,9 @@ void Application::InitVariables(void)
 	//init the camera
 	m_pCamera = new MyCamera();
 	m_pCamera->SetPositionTargetAndUp(
-			vector3(0.0f, 3.0f, 20.0f), //Where my eyes are
-			vector3(0.0f, 3.0f, 19.0f), //where what I'm looking at is
-			AXIS_Y);					//what is up
+			camPos,			//Where my eyes are
+			camTarget,		//where what I'm looking at is
+			AXIS_Y);			//what is up
 
 	//Get the singleton
 	m_pMyMeshMngr = MyMeshManager::GetInstance();
@@ -50,6 +50,11 @@ void Application::Display(void)
 
 	//clear the render list
 	m_pMeshMngr->ClearRenderList();
+
+	//Rotation
+
+	//Movement
+	//if ()
 
 	//Render the list of MyMeshManager
 	m_pMyMeshMngr->Render();

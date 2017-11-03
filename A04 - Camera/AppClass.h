@@ -17,6 +17,8 @@ namespace Simplex
 class Application
 {
 	MyCamera* m_pCamera = nullptr; //Camera class
+	vector3 camPos = vector3(0.0f, 3.0f, 20.0f);
+	vector3 camTarget = vector3(0.0f, 3.0f, 19.0f);
 	MyMeshManager* m_pMyMeshMngr = nullptr; //My Mesh Manager
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //Programmer
 private:
