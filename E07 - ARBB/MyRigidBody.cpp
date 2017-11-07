@@ -159,18 +159,18 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	for (int i = 0; i < 4; i++) {
 
 		//Get max x
-		if (differences[i].x > difference.x) {
-			difference.x = differences[i].x;
+		if (glm::abs(differences[i].x) > difference.x) {
+			difference.x = glm::abs(differences[i].x);
 		}
 
 		//Get max y
-		if (differences[i].y > difference.y) {
-			difference.y = differences[i].y;
+		if (glm::abs(differences[i].y) > difference.y) {
+			difference.y = glm::abs(differences[i].y);
 		}
 
 		//Get max z
-		if (differences[i].z > difference.z) {
-			difference.z = differences[i].z;
+		if (glm::abs(differences[i].z) > difference.z) {
+			difference.z = glm::abs(differences[i].z);
 		}
 	}
 
