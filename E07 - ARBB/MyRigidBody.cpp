@@ -85,12 +85,99 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 	m_m4ToWorld = a_m4ModelMatrix;
 	
 	//your code goes here---------------------
-	m_v3MinG = m_v3MinL;
-	m_v3MaxG = m_v3MaxL;
+
+	//We will calculate the 4 possible min/max coordinates
+	//And store the 4 difference vectors between these possibilities
+	vector3 differences[4];
+
+	vector4 m_v4MinG; //The global coordinates of the min
+	vector4 m_v4MaxG; //The global coordinates of the max
+
+	/*
+	**	difference 0
+	*/
+
+	//Back left bottom
+	m_v4MinG = m_m4ToWorld * vector4(m_v3MinL, 1.0f);
+	m_v3MinG = vector3(m_v4MinG.x, m_v4MinG.y, m_v4MinG.z);
+
+	//Front right top
+	m_v4MaxG = m_m4ToWorld * vector4(m_v3MaxL, 1.0f);
+	m_v3MaxG = vector3(m_v4MaxG.x, m_v4MaxG.y, m_v4MaxG.z);
+
+	differences[0] = m_v3MaxG - m_v3MinG;
+
+	/*
+	**	difference 1
+	*/
+
+	//Back right bottom
+	m_v4MinG = m_m4ToWorld * vector4(vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z), 1.0f);
+	m_v3MinG = vector3(m_v4MinG.x, m_v4MinG.y, m_v4MinG.z);
+
+	//Front left top
+	m_v4MaxG = m_m4ToWorld * vector4(vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z), 1.0f);
+	m_v3MaxG = vector3(m_v4MaxG.x, m_v4MaxG.y, m_v4MaxG.z);
+
+	differences[1] = m_v3MaxG - m_v3MinG;
+
+	/*
+	**	difference 2
+	*/
+
+	//Front right bottom
+	m_v4MinG = m_m4ToWorld * vector4(vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z), 1.0f);
+	m_v3MinG = vector3(m_v4MinG.x, m_v4MinG.y, m_v4MinG.z);
+
+	//Back left top
+	m_v4MaxG = m_m4ToWorld * vector4(vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z), 1.0f);
+	m_v3MaxG = vector3(m_v4MaxG.x, m_v4MaxG.y, m_v4MaxG.z);
+
+	differences[2] = m_v3MaxG - m_v3MinG;
+
+	/*
+	**	difference 3
+	*/
+
+	//Front Left bottom
+	m_v4MinG = m_m4ToWorld * vector4(vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z), 1.0f);
+	m_v3MinG = vector3(m_v4MinG.x, m_v4MinG.y, m_v4MinG.z);
+
+	//Back right top
+	m_v4MaxG = m_m4ToWorld * vector4(vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z), 1.0f);
+	m_v3MaxG = vector3(m_v4MaxG.x, m_v4MaxG.y, m_v4MaxG.z);
+
+	differences[3] = m_v3MaxG - m_v3MinG;
+
+	/*
+	** So now we select the longest difference
+	*/
+
+	//Used to find the shortest distance
+	vector3 difference = vector3(0.0f, 0.0f, 0.0f);
+
+	for (int i = 0; i < 4; i++) {
+
+		//Get max x
+		if (differences[i].x > difference.x) {
+			difference.x = differences[i].x;
+		}
+
+		//Get max y
+		if (differences[i].y > difference.y) {
+			difference.y = differences[i].y;
+		}
+
+		//Get max z
+		if (differences[i].z > difference.z) {
+			difference.z = differences[i].z;
+		}
+	}
+
 	//----------------------------------------
 
 	//we calculate the distance between min and max vectors
-	m_v3ARBBSize = m_v3MaxG - m_v3MinG;
+	m_v3ARBBSize = difference;
 }
 //The big 3
 MyRigidBody::MyRigidBody(std::vector<vector3> a_pointList)
