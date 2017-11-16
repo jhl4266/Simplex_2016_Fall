@@ -23,6 +23,10 @@ void Application::InitVariables(void)
 	m_pCreeper->Load("Minecraft\\Creeper.obj");
 	m_pCreeperRB = new MyRigidBody(m_pCreeper->GetVertexList());
 
+	//plane between theme
+	planeMesh = new Mesh();
+	planeMesh->GeneratePlane(10.0f, C_WHITE);
+
 	//steve
 	m_pSteve = new Model();
 	m_pSteve->Load("Minecraft\\Steve.obj");
@@ -76,6 +80,14 @@ void Application::Display(void)
 	//Add skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
 	
+	if (!m_pCreeperRB->IsColliding(m_pSteveRB)) {
+		matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
+		matrix4 m4View = m_pCameraMngr->GetViewMatrix();
+		matrix4 mSteve = glm::translate(vector3(2.25f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, -55.0f, AXIS_Z);
+		m_pMeshMngr->AddMeshToRenderList(planeMesh, mSteve);
+		planeMesh->Render(m4Projection, m4View, ToMatrix4(m_qArcBall));
+	}
+
 	//render list call
 	m_uRenderCallCount = m_pMeshMngr->Render();
 

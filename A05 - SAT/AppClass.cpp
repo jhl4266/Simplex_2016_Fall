@@ -21,6 +21,16 @@ void Application::InitVariables(void)
 	m_pCreeper->Load("Minecraft\\Creeper.obj");
 	m_pCreeperRB = new MyRigidBody(m_pCreeper->GetVertexList());
 
+	//plane
+	planeMesh = new Mesh();
+	planeMesh->GeneratePlane(5.0f, C_BLUE_CORNFLOWER);
+	m_pMeshMngr->AddMesh(planeMesh);
+
+	//Back of plane
+	planeMeshBack = new Mesh();
+	planeMeshBack->GeneratePlane(5.0f, C_BLUE_CORNFLOWER);
+	m_pMeshMngr->AddMesh(planeMeshBack);
+
 	//steve
 	m_pSteve = new Model();
 	m_pSteve->Load("Minecraft\\Steve.obj");
@@ -58,10 +68,41 @@ void Application::Update(void)
 	m_pSteveRB->AddToRenderList();
 
 	m_pMeshMngr->Print("Colliding: ");
-	if (bColliding)
+	if (bColliding) {
 		m_pMeshMngr->PrintLine("YES!", C_RED);
-	else
+	}
+	else {
+		matrix4 m4Projection = m_pCameraMngr->GetProjectionMatrix();
+		matrix4 m4View = m_pCameraMngr->GetViewMatrix();
+
+		//Avg position of both steve and creeper
+		vector3 position = (m_pSteveRB->GetCenterGlobal() + m_pCreeperRB->GetCenterGlobal()) / 2.0f;
+		matrix4 transform = glm::translate(position);
+
+		//Orientation depends on the sat results
+		matrix4 rot = matrix4();
+
+		uint satResults = m_pCreeperRB->GetSATResults();
+		switch (satResults) {
+			case eSATResults::SAT_AX:
+
+				rot = ToMatrix4(m_qCreeper) * ToMatrix4(m_qArcBall) * glm::rotate(IDENTITY_M4, -90.0f, AXIS_Y);
+				transform *= rot;
+
+				planeMesh = new Mesh();
+				planeMesh->GeneratePlane(5.0f, C_RED);
+				m_pMeshMngr->AddMesh(planeMesh);
+
+				break;
+
+			default:
+				m_pMeshMngr->PrintLine("no", C_YELLOW);
+				return;
+		}
+
+		//m_pMeshMngr->AddMeshToRenderList(planeMesh, transform);
 		m_pMeshMngr->PrintLine("no", C_YELLOW);
+	}
 }
 void Application::Display(void)
 {

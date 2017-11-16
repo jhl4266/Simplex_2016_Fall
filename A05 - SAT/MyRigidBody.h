@@ -37,6 +37,9 @@ class MyRigidBody
 	matrix4 m_m4ToWorld = IDENTITY_M4; //Matrix that will take us from local to world coordinate
 
 	std::set<MyRigidBody*> m_CollidingRBSet; //set of rigid bodies this one is colliding with
+	uint satResults = 0;
+	vector4 axis;
+	vector3 v3Corner[8];
 
 public:
 	/*
@@ -104,6 +107,8 @@ public:
 	OUTPUT: are they colliding?
 	*/
 	bool IsColliding(MyRigidBody* const a_pOther);
+	
+	uint GetSATResults();
 #pragma region Accessors
 	/*
 	Usage: Gets visibility of bounding sphere
@@ -225,6 +230,8 @@ public:
 	Output: ---
 	*/
 	void SetModelMatrix(matrix4 a_m4ModelMatrix);
+
+	vector3* GetCorners();
 #pragma endregion
 	
 private:
@@ -247,6 +254,9 @@ private:
 	OUTPUT: 0 for colliding, other = first axis that succeeds test
 	*/
 	uint SAT(MyRigidBody* const a_pOther);
+
+	bool ProjectionsOverlap(vector3 points[], vector3 otherPoints[], vector3 axis);
+
 };//class
 
 } //namespace Simplex
