@@ -20,7 +20,9 @@ class Application
 	MyEntityManager* m_pEntityMngr = nullptr; //Entity Manager
 	uint m_uOctantID = -1; //Index of Octant to display
 	uint m_uObjects = 0; //Number of objects in the scene
+	uint m_uOctantCount = 9; //Number of objects in the scene
 	uint m_uOctantLevels = 0; //Number of levels in the octree
+	uint m_uIdealEntityCount = 0; //Most number of entities in each octant
 private:
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu"; //programmer
 

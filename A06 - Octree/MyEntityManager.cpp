@@ -6,6 +6,8 @@ void Simplex::MyEntityManager::Init(void)
 {
 	m_uEntityCount = 0;
 	m_mEntityArray = nullptr;
+	octreeCheck = true;
+	octreeVisible = true;
 }
 void Simplex::MyEntityManager::Release(void)
 {
@@ -111,7 +113,7 @@ Simplex::matrix4 Simplex::MyEntityManager::GetModelMatrix(String a_sUniqueID)
 	//if the entity exists
 	if (pTemp)
 	{
-		return pTemp->GetModelMatrix();
+		return pTemp->GetModelMatrix(); 
 	}
 	return IDENTITY_M4;
 }
@@ -174,13 +176,38 @@ void Simplex::MyEntityManager::Update(void)
 	}
 
 	//check collisions
-	for (uint i = 0; i < m_uEntityCount - 1; i++)
+	//If optimized, we only compare elements that are in the same leaf
+	//Else we check each entity to every other entity
+	if (octreeCheck && m_pRoot != nullptr)
 	{
-		for (uint j = i + 1; j < m_uEntityCount; j++)
+		std::vector<MyOctree*> leaves = m_pRoot->GetLeaves();
+
+		for (int l = 0; l < leaves.size(); l++) 
 		{
-			m_mEntityArray[i]->IsColliding(m_mEntityArray[j]);
+			std::vector<int> entities = leaves[l]->GetEntityList();
+			int entityCount = leaves[l]->GetEntityCount();
+
+			for (int i = 0; i < entityCount - 1; i++)
+			{
+				int entityI = entities[i];
+				for (int j = i + 1; j < entityCount; j++)
+				{
+					m_mEntityArray[entityI]->IsColliding(m_mEntityArray[entities[j]]);
+				}
+			}
 		}
 	}
+	else 
+	{
+		for (uint i = 0; i < m_uEntityCount - 1; i++)
+		{
+			for (uint j = i + 1; j < m_uEntityCount; j++)
+			{
+				m_mEntityArray[i]->IsColliding(m_mEntityArray[j]);
+			}
+		}
+	}
+
 }
 void Simplex::MyEntityManager::AddEntity(String a_sFileName, String a_sUniqueID)
 {
@@ -417,4 +444,30 @@ bool Simplex::MyEntityManager::SharesDimension(String a_sUniqueID, MyEntity* con
 		return pTemp->SharesDimension(a_pOther);
 	}
 	return false;
+}
+void Simplex::MyEntityManager::MakeOctree(int a_uOctantLevels, int a_uIdealEntityCount)
+{
+	m_pRoot = new MyOctree(a_uOctantLevels, a_uIdealEntityCount);
+	m_pRoot->StoreLeaves();
+}
+void Simplex::MyEntityManager::DisplayOctree() {
+	if (!octreeVisible) return;
+	if (octreeCheck) {
+		m_pRoot->Display(C_GREEN);
+	}
+	else {
+		m_pRoot->Display(C_WHITE);
+	}
+}
+void Simplex::MyEntityManager::DestroyOctree() {
+	m_pRoot->KillBranches();
+}
+void Simplex::MyEntityManager::ToggleOctreeCheck() {
+	octreeCheck = !octreeCheck;
+}
+void Simplex::MyEntityManager::ToggleOctreeVisible() {
+	octreeVisible = !octreeVisible;
+}
+int Simplex::MyEntityManager::GetOctantCount() {
+	return m_pRoot->GetOctantCount();
 }
